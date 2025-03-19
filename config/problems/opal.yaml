@@ -1,0 +1,22 @@
+problem:
+  name: "Classification"
+  description: "Binary classification problem for predicting customer churn"
+
+features:
+  # Feature definitions with types, ranges, descriptions
+  monthly_charges:
+    type: "float"
+    min: 0.0
+    max: 200.0
+    description: "Monthly charges in dollars"
+  contract_length:
+    type: "categorical"
+    options: ["Month-to-month", "One year", "Two year"]
+    description: "Length of customer contract"
+  # ... other features
+
+model:
+  type: "random_forest"
+  version: "1.2.3"
+  accuracy: 0.87
+  path: "models/random_forest_v1.2.3.pkl"

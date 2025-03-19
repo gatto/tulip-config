@@ -1,0 +1,66 @@
+interfaces:
+  - id: "anemone"
+    name: "Anemone Dashboard"
+    description: "Customer churn analysis dashboard"
+    default_problem: "opal"
+    final: no
+  - id: "begonia"
+    name: "Begonia Dashboard"
+    description: "Medical image analysis dashboard"
+    default_problem: "tanzanite"
+    final: no
+  - id: "calla"
+    name: "Calla Dashboard"
+    description: "Credit risk assessment dashboard"
+    default_problem: "prasiolite"
+    final: no
+  - id: "dalia"
+    name: "Dalia Dashboard"
+    description: "Sentiment analysis dashboard"
+    default_problem: "ruby"
+    final: no
+  - id: "erica"
+    name: "Erica Dashboard"
+    description: "Fraud detection dashboard"
+    default_problem: "sodalite"
+    final: no
+
+problems:
+  - id: "opal"
+    name: "Opal"
+    description: "Classification problems"
+    final: no
+  - id: "prasiolite"
+    name: "Prasiolite"
+    description: "Regression analysis"
+    final: no
+  - id: "ruby"
+    name: "Ruby"
+    description: "Natural language processing"
+    final: no
+  - id: "sodalite"
+    name: "Sodalite"
+    description: "Anomaly detection"
+    final: no
+  - id: "tanzanite"
+    name: "Tanzanite"
+    description: "Image recognition"
+    final: no
+
+# Optional: define valid combinations
+valid_combinations:
+  - interface: "anemone"
+    problems: ["opal", "prasiolite", "sodalite"]
+    final: no
+  - interface: "begonia"
+    problems: ["tanzanite", "ruby"]
+    final: no
+  - interface: "calla"
+    problems: ["prasiolite", "opal", "sodalite"]
+    final: no
+  - interface: "dalia"
+    problems: ["ruby", "opal"]
+    final: no
+  - interface: "erica"
+    problems: ["sodalite", "prasiolite", "opal"]
+    final: no
