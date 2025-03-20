@@ -1,19 +1,48 @@
 problem:
-  name: "Classification"
-  description: "Binary classification problem for predicting customer churn"
+  name: "Personal finance"
+  type: "Classification"
+  description: "Binary classification problem for predicting concession of a personal loan"
 
 features:
   # Feature definitions with types, ranges, descriptions
-  monthly_charges:
-    type: "float"
+  name:
+    type: str
     min: 0.0
     max: 200.0
-    description: "Monthly charges in dollars"
-  contract_length:
-    type: "categorical"
+    description: Monthly charges in dollars
+  age:
+    type: int
     options: ["Month-to-month", "One year", "Two year"]
-    description: "Length of customer contract"
-  # ... other features
+    description: Length of customer contract
+  income:
+    type: categorical
+    options: ["Month-to-month", "One year", "Two year"]
+    description: Length of customer contract
+  credit_score:
+    type: categorical
+    options: ["Month-to-month", "One year", "Two year"]
+    description: Length of customer contract
+  loan_amount:
+    type: categorical
+    options: ["Month-to-month", "One year", "Two year"]
+    description: Length of customer contract
+  defaulted:
+    type: categorical
+    options: ["Month-to-month", "One year", "Two year"]
+    description: Length of customer contract
+  marital_status:
+    type: categorical
+    options: ["Month-to-month", "One year", "Two year"]
+    description: Length of customer contract
+  education_level:
+    type: categorical
+    options: ["Month-to-month", "One year", "Two year"]
+    description: Length of customer contract
+  employment_status:
+    type: categorical
+    options: ["Month-to-month", "One year", "Two year"]
+    description: Length of customer contract
+
 
 model:
   type: "random_forest"
