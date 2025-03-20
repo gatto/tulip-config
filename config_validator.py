@@ -14,6 +14,32 @@ class ConfigValidationError(Exception):
 
 
 @dataclass
+class Model:
+    """Represents a machine learning model configuration."""
+
+    id: str
+    type: str
+    version: str = "1.0.0"
+    accuracy: float = 0.0
+    path: str = ""
+    description: str = ""
+    parameters: Dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def from_config(cls, model_id: str, config_item: Dict[str, Any]) -> "Model":
+        """Create a Model from a config dictionary item"""
+        return cls(
+            id=model_id,
+            type=config_item.get("type", "unknown"),
+            version=config_item.get("version", "1.0.0"),
+            accuracy=config_item.get("accuracy", 0.0),
+            path=config_item.get("path", ""),
+            description=config_item.get("description", ""),
+            parameters=config_item.get("parameters", {}),
+        )
+
+
+@dataclass
 class Problem:
     """Represents a machine learning problem configuration."""
 
@@ -22,7 +48,7 @@ class Problem:
     description: str
     final: bool = False
     features: Dict[str, Any] = field(default_factory=dict)
-    model: Dict[str, Any] = field(default_factory=dict)
+    model: Optional[Model] = None
 
     @classmethod
     def from_config(cls, config_item: Dict[str, Any]) -> "Problem":
@@ -111,6 +137,7 @@ class ConfigValidator:
         self.master_config_path = self.config_dir / "master.yaml"
         self.problems_dir = self.config_dir / "problems"
         self.interfaces_dir = self.config_dir / "interfaces"
+        self.models_dir = self.config_dir / "models"  # New directory for model configs
 
         # Ensure required directories exist
         if not self.config_dir.exists():
@@ -129,6 +156,10 @@ class ConfigValidator:
         # Interfaces directory might not exist in older versions
         if not self.interfaces_dir.exists():
             os.makedirs(self.interfaces_dir, exist_ok=True)
+
+        # Models directory might not exist yet
+        if not self.models_dir.exists():
+            os.makedirs(self.models_dir, exist_ok=True)
 
     def load_yaml(self, file_path: Path) -> Dict[str, Any]:
         """
@@ -181,6 +212,16 @@ class ConfigValidator:
         # Validate problems
         for i, problem in enumerate(master_config.get("problems", [])):
             self._validate_problem_entry(problem, i)
+
+        # Validate models if present
+        if "models" in master_config:
+            if not isinstance(master_config["models"], list):
+                raise ConfigValidationError(
+                    "Master config section 'models' must be a list"
+                )
+
+            for i, model in enumerate(master_config["models"]):
+                self._validate_model_entry(model, i)
 
         # Validate valid_combinations if present
         if "valid_combinations" in master_config:
@@ -246,6 +287,17 @@ class ConfigValidator:
         if not problem["id"].isalnum():
             raise ConfigValidationError(
                 f"Problem id '{problem['id']}' must be alphanumeric"
+            )
+
+    def _validate_model_entry(self, model: Dict[str, Any], index: int) -> None:
+        """Validate a model entry in the master config."""
+        required_fields = ["id", "type"]
+        self._validate_required_fields(model, required_fields, f"Model {index}")
+
+        # Validate model id format (simple alphanumeric check)
+        if not model["id"].isalnum():
+            raise ConfigValidationError(
+                f"Model id '{model['id']}' must be alphanumeric"
             )
 
     def _validate_required_fields(
@@ -400,6 +452,48 @@ class ConfigValidator:
 
         return problem_config
 
+    def validate_model_config(self, model_id: str) -> Dict[str, Any]:
+        """
+        Validate a model configuration file if it exists.
+
+        Args:
+            model_id: The ID of the model to validate
+
+        Returns:
+            The validated model configuration
+
+        Raises:
+            ConfigValidationError: If validation fails
+        """
+        # Check in the dedicated models directory
+        model_path = self.models_dir / f"{model_id}.yaml"
+
+        # If model file doesn't exist, it might be defined inline in master.yaml
+        if not model_path.exists():
+            master_config = self.load_yaml(self.master_config_path)
+            models = master_config.get("models", [])
+            for model in models:
+                if model.get("id") == model_id:
+                    # Return the inline model configuration
+                    return {"model": model}
+
+            # If we get here, the model was not found in either location
+            return {"model": {"id": model_id, "type": "unknown"}}
+
+        model_config = self.load_yaml(model_path)
+
+        # Check for required sections
+        if "model" not in model_config:
+            raise ConfigValidationError(
+                f"Model config {model_id} is missing 'model' section"
+            )
+
+        model = model_config["model"]
+        required_fields = ["type"]
+        self._validate_required_fields(model, required_fields, f"Model {model_id}")
+
+        return model_config
+
     def validate_all(self) -> Dict[str, Any]:
         """
         Validate all configuration files.
@@ -414,6 +508,7 @@ class ConfigValidator:
             "master": None,
             "interfaces": {},
             "problems": {},
+            "models": {},
             "valid_combinations": [],
             "errors": [],
         }
@@ -443,6 +538,26 @@ class ConfigValidator:
                 results["problems"][problem_id] = problem_config
             except ConfigValidationError as e:
                 results["errors"].append(f"Problem '{problem_id}' error: {str(e)}")
+
+        # Validate all models
+        for model in master_config.get("models", []):
+            model_id = model["id"]
+            try:
+                model_config = self.validate_model_config(model_id)
+                results["models"][model_id] = model_config
+            except ConfigValidationError as e:
+                results["errors"].append(f"Model '{model_id}' error: {str(e)}")
+
+        # Also check for models defined in problem configs
+        for problem_id, problem_config in results["problems"].items():
+            if "model" in problem_config:
+                model_data = problem_config["model"]
+                if isinstance(model_data, dict) and "type" in model_data:
+                    # Create a model_id if not explicitly defined
+                    model_id = model_data.get("id", f"{problem_id}_model")
+                    # Add to models collection if not already there
+                    if model_id not in results["models"]:
+                        results["models"][model_id] = {"model": model_data}
 
         # Extract valid combinations
         for combo in master_config.get("valid_combinations", []):
@@ -477,8 +592,25 @@ class ConfigValidator:
                 details = validation_results["problems"][problem_id]
                 if "features" in details:
                     problem.features = details["features"]
+
+                # Load model information
                 if "model" in details:
-                    problem.model = details["model"]
+                    model_data = details["model"]
+                    model_id = model_data.get("id", f"{problem_id}_model")
+                    problem.model = Model.from_config(model_id, model_data)
+
+                # Check if this problem has a model referenced in master.yaml
+                master_models = master_config.get("models", [])
+                for model in master_models:
+                    # If there's a model with matching problem_id reference or matching id
+                    if (
+                        model.get("problem_id") == problem_id
+                        or model.get("id") == problem_id
+                    ):
+                        problem.model = Model.from_config(
+                            model.get("id", model_id), model
+                        )
+                        break
 
             problems.append(problem)
 
@@ -507,6 +639,45 @@ class ConfigValidator:
             interfaces.append(interface)
 
         return interfaces
+
+    def get_models(self, validation_results=None) -> List[Model]:
+        """
+        Get a list of Model objects from the configuration.
+
+        Args:
+            validation_results: Optional validation results from validate_all()
+
+        Returns:
+            List of Model objects
+        """
+        if validation_results is None:
+            validation_results = self.validate_all()
+
+        master_config = validation_results.get("master")
+        if not master_config:
+            return []
+
+        models = []
+
+        # First check models section in master config
+        for model_config in master_config.get("models", []):
+            model_id = model_config["id"]
+            model = Model.from_config(model_id, model_config)
+            models.append(model)
+
+        # Then check models in individual problem configs
+        for problem_id, problem_config in validation_results["problems"].items():
+            if "model" in problem_config:
+                model_data = problem_config["model"]
+                if isinstance(model_data, dict) and "type" in model_data:
+                    # Create a model_id if not explicitly defined
+                    model_id = model_data.get("id", f"{problem_id}_model")
+                    # Only add if not already added from master config
+                    if not any(m.id == model_id for m in models):
+                        model = Model.from_config(model_id, model_data)
+                        models.append(model)
+
+        return models
 
     def get_valid_combinations(self, validation_results=None) -> List[ValidCombination]:
         """
@@ -566,6 +737,7 @@ def print_validation_report(results: Dict[str, Any]) -> None:
     print(f"  - Master config: OK")
     print(f"  - Interfaces: {len(results['interfaces'])} valid")
     print(f"  - Problems: {len(results['problems'])} valid")
+    print(f"  - Models: {len(results['models'])} valid")
     print(f"  - Valid Combinations: {len(results['valid_combinations'])}")
 
 
