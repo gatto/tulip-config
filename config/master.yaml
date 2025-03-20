@@ -3,7 +3,7 @@ interfaces:
     name: "Anemone Dashboard"
     description: "Customer churn analysis dashboard"
     default_problem: "opal"
-    final: no
+    final: yes
   - id: "begonia"
     name: "Begonia Dashboard"
     description: "Medical image analysis dashboard"
@@ -29,7 +29,7 @@ problems:
   - id: "opal"
     name: "Opal"
     description: "Classification problems"
-    final: no
+    final: yes
   - id: "prasiolite"
     name: "Prasiolite"
     description: "Regression analysis"

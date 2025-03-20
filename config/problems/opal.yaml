@@ -1,7 +1,8 @@
 problem:
-  name: "Personal finance"
-  type: "Classification"
-  description: "Binary classification problem for predicting concession of a personal loan"
+  name: Personal finance
+  type: Classification
+  target: loan_granted
+  description: Binary classification problem for predicting concession of a personal loan
 
 features:
   # Feature definitions with types, ranges, descriptions
@@ -10,38 +11,47 @@ features:
     min: 0.0
     max: 200.0
     description: Monthly charges in dollars
+    explorable: no
   age:
     type: int
     options: ["Month-to-month", "One year", "Two year"]
     description: Length of customer contract
+    explorable: yes
   income:
     type: categorical
     options: ["Month-to-month", "One year", "Two year"]
     description: Length of customer contract
+    explorable: yes
   credit_score:
     type: categorical
     options: ["Month-to-month", "One year", "Two year"]
     description: Length of customer contract
+    explorable: yes
   loan_amount:
     type: categorical
     options: ["Month-to-month", "One year", "Two year"]
     description: Length of customer contract
+    explorable: no
   defaulted:
     type: categorical
     options: ["Month-to-month", "One year", "Two year"]
     description: Length of customer contract
+    explorable: no
   marital_status:
     type: categorical
     options: ["Month-to-month", "One year", "Two year"]
     description: Length of customer contract
+    explorable: no
   education_level:
     type: categorical
     options: ["Month-to-month", "One year", "Two year"]
     description: Length of customer contract
+    explorable: yes
   employment_status:
     type: categorical
     options: ["Month-to-month", "One year", "Two year"]
     description: Length of customer contract
+    explorable: no
 
 
 model:
