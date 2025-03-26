@@ -1,8 +1,7 @@
 problem:
-  name: Personal finance
-  type: Classification
+  id: opal
+  type: classification
   target: loan_granted
-  description: Binary classification problem for predicting concession of a personal loan
 
 features:
   # Feature definitions with types, ranges, descriptions
@@ -52,7 +51,6 @@ features:
     options: ["Month-to-month", "One year", "Two year"]
     description: Length of customer contract
     explorable: no
-
 
 model:
   type: "random_forest"
