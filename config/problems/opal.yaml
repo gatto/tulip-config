@@ -5,52 +5,63 @@ problem:
 
 features:
   # Feature definitions with types, ranges, descriptions
-  name:
-    type: str
-    min: 0.0
-    max: 200.0
-    description: Monthly charges in dollars
-    explorable: no
-  age:
+  loan_id:
     type: int
-    options: ["Month-to-month", "One year", "Two year"]
-    description: Length of customer contract
-    explorable: yes
-  income:
+    min: 1
+    max: 4269
+    description: Unique identifier for each loan
+    explorable: no
+  no_of_dependents:
+    type: int
+    min: 0
+    max: 5
+    description: Number of dependents of the applicant
+    explorable: no
+  education:
     type: categorical
-    options: ["Month-to-month", "One year", "Two year"]
-    description: Length of customer contract
+    options: ["Not Graduate", "Graduate"]
+    description: Formal education of the applicant
     explorable: yes
-  credit_score:
-    type: categorical
-    options: ["Month-to-month", "One year", "Two year"]
-    description: Length of customer contract
+  self_employed:
+    type: bool
+    description: Employment status of the applicant
+    explorable: yes
+  income_annum:
+    type: float
+    min: 0
+    max: 9900000
+    description: Annual income of the applicant
     explorable: yes
   loan_amount:
-    type: categorical
-    options: ["Month-to-month", "One year", "Two year"]
-    description: Length of customer contract
-    explorable: no
-  defaulted:
-    type: categorical
-    options: ["Month-to-month", "One year", "Two year"]
-    description: Length of customer contract
-    explorable: no
-  marital_status:
-    type: categorical
-    options: ["Month-to-month", "One year", "Two year"]
-    description: Length of customer contract
-    explorable: no
-  education_level:
-    type: categorical
-    options: ["Month-to-month", "One year", "Two year"]
-    description: Length of customer contract
+    type: float
+    min: 100
+    max: 395000000
+    description: Amount of loan requested
     explorable: yes
-  employment_status:
-    type: categorical
-    options: ["Month-to-month", "One year", "Two year"]
-    description: Length of customer contract
+  loan_term:
+    type: int
+    min: 2
+    max: 20
+    description: Duration of the loan in years
+    explorable: yes
+  cibil_score:
+    type: int
+    min: 300
+    max: 900
+    description: Credit score of the applicant
     explorable: no
+  residential_assets_value:
+    type: float
+    min: -100000
+    max: 29100000
+    description: Value of residential assets owned by the applicant
+    explorable: yes
+  commercial_assets_value:
+    type: float
+    min: 0
+    max: 19400000
+    description: Value of commercial assets owned by the applicant
+    explorable: yes
 
 model:
   type: "random_forest"
