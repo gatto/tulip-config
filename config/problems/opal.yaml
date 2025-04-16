@@ -55,13 +55,13 @@ features:
     min: -100000
     max: 29100000
     description: Value of residential assets owned by the applicant
-    explorable: yes
+    explorable: no
   commercial_assets_value:
     type: float
     min: 0
     max: 19400000
     description: Value of commercial assets owned by the applicant
-    explorable: yes
+    explorable: no
 
 model:
   type: "random_forest"

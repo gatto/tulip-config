@@ -44,7 +44,6 @@ class Problem:
     """Represents a machine learning problem configuration."""
 
     id: str
-    name: str
     description: str
     final: bool = False
     features: Dict[str, Any] = field(default_factory=dict)
@@ -55,7 +54,6 @@ class Problem:
         """Create a Problem from a config dictionary item"""
         return cls(
             id=config_item["id"],
-            name=config_item["name"],
             description=config_item["description"],
             final=config_item.get("final", False),
         )
@@ -66,7 +64,6 @@ class Interface:
     """Represents a user interface configuration."""
 
     id: str
-    name: str
     description: str
     default_problem: str = ""
     final: bool = False
@@ -76,7 +73,6 @@ class Interface:
         """Create an Interface from a config dictionary item"""
         return cls(
             id=config_item["id"],
-            name=config_item["name"],
             description=config_item["description"],
             default_problem=config_item.get("default_problem", ""),
             final=config_item.get("final", False),
@@ -269,7 +265,7 @@ class ConfigValidator:
 
     def _validate_interface_entry(self, interface: Dict[str, Any], index: int) -> None:
         """Validate an interface entry in the master config."""
-        required_fields = ["id", "name", "description"]
+        required_fields = ["id", "description"]
         self._validate_required_fields(interface, required_fields, f"Interface {index}")
 
         # Validate interface id format (simple alphanumeric check)
@@ -280,25 +276,13 @@ class ConfigValidator:
 
     def _validate_problem_entry(self, problem: Dict[str, Any], index: int) -> None:
         """Validate a problem entry in the master config."""
-        required_fields = ["id", "name", "description"]
+        required_fields = ["id", "description"]
         self._validate_required_fields(problem, required_fields, f"Problem {index}")
-
-        # Validate problem id format (simple alphanumeric check)
-        if not problem["id"].isalnum():
-            raise ConfigValidationError(
-                f"Problem id '{problem['id']}' must be alphanumeric"
-            )
 
     def _validate_model_entry(self, model: Dict[str, Any], index: int) -> None:
         """Validate a model entry in the master config."""
         required_fields = ["id", "type"]
         self._validate_required_fields(model, required_fields, f"Model {index}")
-
-        # Validate model id format (simple alphanumeric check)
-        if not model["id"].isalnum():
-            raise ConfigValidationError(
-                f"Model id '{model['id']}' must be alphanumeric"
-            )
 
     def _validate_required_fields(
         self, item: Dict[str, Any], required_fields: List[str], item_name: str
@@ -334,7 +318,6 @@ class ConfigValidator:
             return {
                 "interface": {
                     "id": interface_id,
-                    "name": interface_id,
                     "description": "",
                 }
             }
@@ -354,7 +337,7 @@ class ConfigValidator:
             section_name = "dashboard"  # For backward compatibility
 
         interface = interface_config[section_name]
-        required_fields = ["name", "description"]
+        required_fields = ["id", "description"]
         self._validate_required_fields(
             interface, required_fields, f"Interface {interface_id}"
         )
@@ -414,7 +397,7 @@ class ConfigValidator:
             )
 
         problem = problem_config["problem"]
-        required_fields = ["name", "description"]
+        required_fields = ["id", "description"]
         self._validate_required_fields(
             problem, required_fields, f"Problem {problem_id}"
         )
