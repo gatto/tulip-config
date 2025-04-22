@@ -1,7 +1,7 @@
 problem:
   id: opal
   type: classification
-  target: loan_granted
+  target: loan_status
 
 features:
   # Feature definitions with types, ranges, descriptions
@@ -10,6 +10,11 @@ features:
     min: 1
     max: 4269
     description: Unique identifier for each loan
+    explorable: no
+  loan_status:
+    type: categorical
+    options: ["Approved", "Rejected"]
+    description: If loan was granted or not
     explorable: no
   no_of_dependents:
     type: int
@@ -62,8 +67,22 @@ features:
     max: 19400000
     description: Value of commercial assets owned by the applicant
     explorable: no
+  luxury_assets_value:
+    type: float
+    min: 0
+    max: 39200000
+    description: Value of luxury assets owned by the applicant
+    explorable: no
+  bank_asset_value:
+    type: float
+    min: 0
+    max: 14700000
+    description: Bank balance owned by the applicant
+    explorable: no
 
-model:
+
+
+predictor:
   type: "random_forest"
   version: "1.2.3"
   accuracy: 0.87

@@ -1,67 +1,67 @@
 interfaces:
-  - id: anemone
+  anemone:
     name: Anemone Dashboard
     description: First newly developed analysis dashboard
     default_problem: opal
     final: yes
-  - id: begonia
+  begonia:
     name: Begonia Dashboard
     description: Medical image analysis dashboard
     default_problem: tanzanite
     final: no
-  - id: calla
+  calla:
     name: Calla Dashboard
     description: Credit risk assessment dashboard
     default_problem: prasiolite
     final: no
-  - id: dalia
+  dalia:
     name: Dalia Dashboard
     description: Sentiment analysis dashboard
     default_problem: ruby
     final: no
-  - id: erica
+  erica:
     name: Erica Dashboard
     description: Fraud detection dashboard
     default_problem: sodalite
     final: no
 
 problems:
-  - id: opal
+  opal:
     name: Personal finance
     description: Binary classification problem for predicting personal loan approval
     final: yes
-  - id: prasiolite
+  prasiolite:
     name: Prasiolite
     description: Regression analysis
     final: no
-  - id: ruby
+  ruby:
     name: Ruby
     description: Natural language processing
     final: no
-  - id: sodalite
+  sodalite:
     name: Sodalite
     description: Anomaly detection
     final: no
-  - id: tanzanite
+  tanzanite:
     name: Tanzanite
     description: Image recognition
     final: no
 
 # Optional: define valid combinations
 valid_combinations:
-  - interface: anemone
+  anemone:
     problems: [opal, prasiolite, sodalite]
     final: no
-  - interface: begonia
+  begonia:
     problems: [tanzanite, ruby]
     final: no
-  - interface: calla
+  calla:
     problems: [prasiolite, opal, sodalite]
     final: no
-  - interface: dalia
+  dalia:
     problems: [ruby, opal]
     final: no
-  - interface: erica
+  erica:
     problems: [sodalite, prasiolite, opal]
     final: no
 

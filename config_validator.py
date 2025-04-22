@@ -40,26 +40,6 @@ class Model:
 
 
 @dataclass
-class Problem:
-    """Represents a machine learning problem configuration."""
-
-    id: str
-    description: str
-    final: bool = False
-    features: Dict[str, Any] = field(default_factory=dict)
-    model: Optional[Model] = None
-
-    @classmethod
-    def from_config(cls, config_item: Dict[str, Any]) -> "Problem":
-        """Create a Problem from a config dictionary item"""
-        return cls(
-            id=config_item["id"],
-            description=config_item["description"],
-            final=config_item.get("final", False),
-        )
-
-
-@dataclass
 class Interface:
     """Represents a user interface configuration."""
 
